@@ -2,18 +2,118 @@
 
 {% block title %}Dashboard — {{ appName }}{% endblock %}
 
-{% block content %}
-    <h1>{{ appName }}</h1>
-    <p>Versão {{ version }}</p>
+{% block content_header %}Dashboard{% endblock %}
 
-    {% if apps | length > 0 %}
-        <h2>Apps registrados</h2>
-        <ul>
-            {% for name, path in apps %}
-                <li><a href="/{{ name }}">{{ name | capitalize }}</a></li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Nenhum app registrado.</p>
-    {% endif %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-3 col-6">
+            <div class="small-box text-bg-info">
+                <div class="inner">
+                    <h3>{{ apps | length }}</h3>
+                    <p>Apps Registrados</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-cubes"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-6">
+            <div class="small-box text-bg-success">
+                <div class="inner">
+                    <h3>{{ appVersion }}</h3>
+                    <p>Versão</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-code-branch"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-6">
+            <div class="small-box text-bg-warning">
+                <div class="inner">
+                    <h3><i class="fas fa-check"></i></h3>
+                    <p>DB Conectado</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-database"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-6">
+            <div class="small-box text-bg-danger">
+                <div class="inner">
+                    <h3><i class="fas fa-user"></i></h3>
+                    <p>{{ currentUser.name | default('Usuário') }}</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-cubes me-2"></i>Apps Registrados</h3>
+                </div>
+                <div class="card-body p-0">
+                    {% if apps | length > 0 %}
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>App</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for name, path in apps %}
+                            <tr>
+                                <td><i class="fas fa-puzzle-piece me-2"></i>{{ name | capitalize }}</td>
+                                <td><a href="{{ basePath }}/" class="btn btn-sm btn-primary"><i class="fas fa-external-link-alt me-1"></i>Abrir</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="p-3">
+                        <p class="text-muted mb-0">Nenhum app registrado.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-info-circle me-2"></i>Informações do Sistema</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <td><strong>Framework</strong></td>
+                            <td>{{ appName }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Versão</strong></td>
+                            <td>{{ appVersion }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PHP</strong></td>
+                            <td>{{ phpVersion | default('') }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Usuário</strong></td>
+                            <td>{{ currentUser.username | default('—') }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

@@ -3,19 +3,18 @@
 namespace Lliure\Controllers;
 
 use Lliure\Bootstrap;
+use Psr\Http\Message\ServerRequestInterface;
 
 class DashboardController
 {
-    public function index(): void
+    public function index(ServerRequestInterface $request, array $vars): string
     {
         $bootstrap = Bootstrap::getInstance();
         $twig = $bootstrap->getTwig();
-        $config = $bootstrap->getConfig('app');
 
-        echo $twig->render('dashboard.twig', [
-            'appName' => $config['name'] ?? 'Lliure',
-            'version' => $config['version'] ?? '2.0.0',
-            'apps'    => $bootstrap->getApps(),
+        return $twig->render('dashboard.twig', [
+            'apps'       => $bootstrap->getApps(),
+            'phpVersion' => PHP_VERSION,
         ]);
     }
 }

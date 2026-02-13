@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — {{ appName | default('lliure') }}</title>
+  <link rel="icon" href="{{ panel.favicon }}">
+
+  <link rel="stylesheet" href="/vendor/almasaeed2010/adminlte/dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Cormorant+Garamond:wght@500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --brand-color: {{ panel.login_color | default('#661a33') }};
+      --brand-light: color-mix(in srgb, var(--brand-color) 8%, white);
+      --brand-border: color-mix(in srgb, var(--brand-color) 25%, white);
+      --brand-dark: color-mix(in srgb, var(--brand-color) 100%, black 15%);
+      --brand-hover: color-mix(in srgb, var(--brand-color) 100%, white 15%);
+      --cream: #faf8f5;
+      --text-dark: #1e1e2e;
+      --text-muted: #8a8a9a;
+      --border: #e0e0e8;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .split { display: flex; min-height: 100vh; width: 100%; }
+
+    /* Left panel */
+    .side-brand {
+      flex: 0 0 40%;
+      background: var(--brand-color);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      overflow: hidden;
+    }
+
+    .side-brand::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 25% 75%, rgba(255,255,255,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 75% 20%, rgba(0,0,0,0.12) 0%, transparent 50%);
+    }
+
+    .geo {
+      position: absolute;
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: drift 22s ease-in-out infinite alternate;
+    }
+    .geo-a { width: 280px; height: 280px; top: -80px; left: -60px; }
+    .geo-b { width: 200px; height: 200px; bottom: -50px; right: -40px; border-radius: 30%; animation-direction: alternate-reverse; }
+
+    @keyframes drift {
+      0%   { transform: translate(0,0) rotate(0deg); }
+      100% { transform: translate(12px,-10px) rotate(6deg); }
+    }
+
+    .brand-inner {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+
+    .brand-logo svg {
+      max-width: 160px;
+      max-height: 120px;
+      width: {{ panel.login_logo_width | default('160px') }};
+      height: auto;
+      fill: #fff;
+    }
+
+    .brand-tag {
+      color: rgba(255,255,255,0.4);
+      font-size: 0.7rem;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      margin-top: 0.8rem;
+      font-weight: 300;
+    }
+
+    .brand-desc {
+      color: rgba(255,255,255,0.25);
+      font-size: 0.75rem;
+      line-height: 1.6;
+      margin-top: 1.5rem;
+      max-width: 240px;
+    }
+
+    .brand-line {
+      width: 30px; height: 1.5px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.3), transparent);
+      margin: 1.2rem auto 0;
+    }
+
+    .brand-footer {
+      position: absolute;
+      bottom: 1.2rem;
+      font-size: 0.6rem;
+      color: rgba(255,255,255,0.18);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      z-index: 2;
+    }
+
+    /* Right panel */
+    .side-form {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: var(--cream);
+    }
+
+    .form-box {
+      width: 100%;
+      max-width: 320px;
+      animation: slideIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s both;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(12px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Mobile logo */
+    .mobile-logo {
+      display: none;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .mobile-logo svg {
+      width: 120px;
+      height: auto;
+    }
+
+    .form-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 0.25rem;
+    }
+
+    .form-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Fields */
+    .fg { margin-bottom: 1rem; }
+
+    .fg label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 0.35rem;
+      letter-spacing: 0.3px;
+    }
+
+    .fw { position: relative; }
+
+    .fw input {
+      width: 100%;
+      height: 40px;
+      padding: 0 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.82rem;
+      color: var(--text-dark);
+      transition: all 0.2s ease;
+    }
+
+    .fw input::placeholder { color: #c0c0cc; }
+
+    .fw input:focus {
+      outline: none;
+      border-color: var(--brand-color);
+      box-shadow: 0 0 0 2.5px var(--brand-light);
+    }
+
+    .fw .tog {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #b0b0bd;
+      font-size: 0.95rem;
+      cursor: pointer;
+      padding: 2px;
+      transition: color 0.2s;
+    }
+    .fw .tog:hover { color: var(--brand-color); }
+
+    /* Button */
+    .btn-go {
+      width: 100%;
+      height: 40px;
+      border: none;
+      border-radius: 8px;
+      background: var(--brand-color);
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-go:hover {
+      background: var(--brand-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px color-mix(in srgb, var(--brand-color) 35%, transparent);
+    }
+
+    .btn-go:active { transform: translateY(0); }
+
+    .btn-go .arr { transition: transform 0.2s; }
+    .btn-go:hover .arr { transform: translateX(2px); }
+
+    .btn-go.ld { pointer-events: none; }
+    .btn-go.ld .txt, .btn-go.ld .arr { opacity: 0; }
+
+    .btn-go .sp {
+      position: absolute;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.25);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      opacity: 0;
+    }
+    .btn-go.ld .sp { opacity: 1; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Alert */
+    .alt {
+      background: var(--brand-light);
+      border: 1px solid var(--brand-border);
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+      color: var(--brand-color);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 1rem;
+      animation: fadeIn 0.25s ease;
+    }
+    .alt i { font-size: 0.85rem; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-3px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .shake { animation: shake 0.4s cubic-bezier(0.36,0.07,0.19,0.97); }
+    @keyframes shake {
+      10%,90% { transform: translateX(-1px); }
+      20%,80% { transform: translateX(2px); }
+      30%,50%,70% { transform: translateX(-4px); }
+      40%,60% { transform: translateX(4px); }
+    }
+
+    /* Footer */
+    .foot {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+    .foot a { color: var(--brand-color); text-decoration: none; font-weight: 500; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .side-brand { display: none; }
+      .mobile-logo { display: block; }
+      .side-form {
+        background:
+          radial-gradient(ellipse 60% 35% at 50% 100%, color-mix(in srgb, var(--brand-color) 4%, transparent) 0%, transparent 60%),
+          var(--cream);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .side-form { padding: 1.5rem; }
+      .form-title { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="split">
+
+    <div class="side-brand">
+      <div class="geo geo-a"></div>
+      <div class="geo geo-b"></div>
+      <div class="brand-inner">
+        <div class="brand-logo">
+          {{ panel.login_logo | raw }}
+        </div>
+        <div class="brand-tag">{{ panel.login_tagline }}</div>
+        <p class="brand-desc">{{ panel.login_description }}</p>
+        <div class="brand-line"></div>
+      </div>
+      <div class="brand-footer">{{ appName | default('lliure') | lower }} &middot; v{{ appVersion | default('2.0.0') }}</div>
+    </div>
+
+    <div class="side-form">
+      <div class="form-box{% if error %} shake{% endif %}">
+
+        <div class="mobile-logo">
+          {{ panel.login_logo_mobile | raw }}
+        </div>
+
+        <form action="{{ basePath }}/auth/login" method="post" id="loginForm">
+
+          {% if error %}
+          <div class="alt">
+            <i class="bi bi-exclamation-circle"></i>
+            <span>{{ error }}</span>
+          </div>
+          {% endif %}
+
+          <div class="fg">
+            <label for="username">Usuario</label>
+            <div class="fw">
+              <input type="text" id="username" name="username" placeholder="Digite seu usuario" autocomplete="username" required autofocus>
+            </div>
+          </div>
+
+          <div class="fg">
+            <label for="password">Senha</label>
+            <div class="fw">
+              <input type="password" id="password" name="password" placeholder="Digite sua senha" autocomplete="current-password" required>
+              <button type="button" class="tog" id="togPass" aria-label="Mostrar senha">
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-go mt-3" id="btnGo">
+            <span class="txt">Entrar</span>
+            <i class="bi bi-arrow-right arr"></i>
+            <div class="sp"></div>
+          </button>
+        </form>
+
+        <div class="foot">
+          {{ appName | default('lliure') | lower }} &copy; 2025
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Toggle password visibility
+    const togBtn = document.getElementById('togPass');
+    const passIn = document.getElementById('password');
+    togBtn.addEventListener('click', () => {
+      const s = passIn.type === 'password';
+      passIn.type = s ? 'text' : 'password';
+      togBtn.querySelector('i').classList.toggle('bi-eye');
+      togBtn.querySelector('i').classList.toggle('bi-eye-slash');
+    });
+
+    // Loading spinner on submit
+    const form = document.getElementById('loginForm');
+    const btn = document.getElementById('btnGo');
+    form.addEventListener('submit', () => {
+      btn.classList.add('ld');
+    });
+  </script>
+</body>
+</html>

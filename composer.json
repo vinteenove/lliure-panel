@@ -8,7 +8,9 @@
         "lliure/helpers": "^v2",
         "lliure/lllog": "^v1.11",
         "lliure/twig-translate": "^v0.6",
-        "twig/twig": "^3.0"
+        "lliure/router": "^v0",
+        "twig/twig": "^3.0",
+        "almasaeed2010/adminlte": "4.0.0-RC3"
     },
     "autoload": {
         "psr-4": {
