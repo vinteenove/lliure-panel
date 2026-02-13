@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ appName | default('Lliure') }}{% endblock %}</title>
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    <nav>
+        <strong>{{ appName | default('Lliure') }}</strong>
+        <ul>
+            <li><a href="/dashboard">Dashboard</a></li>
+            {% for name, path in apps | default({}) %}
+                <li><a href="/{{ name }}">{{ name | capitalize }}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

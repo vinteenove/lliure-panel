@@ -1,0 +1,19 @@
+{% extends "layout.twig" %}
+
+{% block title %}Dashboard — {{ appName }}{% endblock %}
+
+{% block content %}
+    <h1>{{ appName }}</h1>
+    <p>Versão {{ version }}</p>
+
+    {% if apps | length > 0 %}
+        <h2>Apps registrados</h2>
+        <ul>
+            {% for name, path in apps %}
+                <li><a href="/{{ name }}">{{ name | capitalize }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum app registrado.</p>
+    {% endif %}
+{% endblock %}
