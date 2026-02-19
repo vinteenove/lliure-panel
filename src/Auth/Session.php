@@ -22,8 +22,13 @@ class Session
     public function start(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
+            $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                || ($_SERVER['SERVER_PORT'] ?? 0) == 443
+                || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
+
             session_set_cookie_params([
                 'httponly'  => true,
+                'secure'    => $isHttps,
                 'samesite'  => 'Lax',
             ]);
             session_start();
