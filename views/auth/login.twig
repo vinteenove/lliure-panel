@@ -345,10 +345,11 @@
 
         <form action="{{ basePath }}/auth/login" method="post" id="loginForm">
 
-          {% if error %}
+          {% set _err = error|default(flash_error|default('')) %}
+          {% if _err %}
           <div class="alt">
             <i class="bi bi-exclamation-circle"></i>
-            <span>{{ error }}</span>
+            <span>{{ _err }}</span>
           </div>
           {% endif %}
 
