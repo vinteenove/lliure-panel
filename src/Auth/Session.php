@@ -26,10 +26,15 @@ class Session
                 || ($_SERVER['SERVER_PORT'] ?? 0) == 443
                 || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
 
+            $lifetime = 30 * 24 * 60 * 60; // 30 dias
+
+            ini_set('session.gc_maxlifetime', (string) $lifetime);
+
             session_set_cookie_params([
-                'httponly'  => true,
-                'secure'    => $isHttps,
-                'samesite'  => 'Lax',
+                'lifetime'  => $lifetime,
+                'httponly'   => true,
+                'secure'     => $isHttps,
+                'samesite'   => 'Lax',
             ]);
             session_start();
         }
