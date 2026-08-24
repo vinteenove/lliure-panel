@@ -7,6 +7,9 @@ use Lliure\Models\User;
 class Auth
 {
     private static ?self $instance = null;
+
+    /** @var null|callable():?User */
+    private static $identityResolver = null;
     private Session $session;
     private ?User $user = null;
 
@@ -73,8 +76,29 @@ class Auth
         return $this->user;
     }
 
+    /**
+     * [spike] Identidade externa — coexistência v1↔v2.
+     *
+     * Sob o Vimu quem autentica é o v1 (sessão `ll`), e não existe linha em
+     * `lliure_users` para o usuário logado. O resolver traduz a sessão de quem
+     * hospeda o v2 num User, evitando um segundo login. Sem resolver registrado,
+     * o Auth segue com o fluxo próprio (auth_user_id).
+     *
+     * @param null|callable():?\Lliure\Models\User $resolver
+     */
+    public static function setIdentityResolver(?callable $resolver): void
+    {
+        self::$identityResolver = $resolver;
+        self::$instance = null; // a identidade é recarregada no próximo getInstance()
+    }
+
     private function loadUserFromSession(): void
     {
+        if (self::$identityResolver !== null) {
+            $this->user = (self::$identityResolver)();
+            return;
+        }
+
         $userId = $this->session->get('auth_user_id');
 
         if ($userId) {
