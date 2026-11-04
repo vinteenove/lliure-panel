@@ -1,0 +1,236 @@
+{#
+   Tema Soft (inspirado no Soft UI Dashboard da Creative Tim, MIT).
+   Muda o jeito do AdminLTE sem trocar a estrutura dele: menu sem fundo com
+   ícones em quadradinhos (o ativo em gradiente), cabeçalho transparente,
+   cards sem borda com sombra suave, cantos de 1rem e botões em caixa alta.
+
+   Duas paletas, só de cor:
+     panel.theme = 'soft'       → claro, cores originais do Soft UI
+     panel.theme = 'soft-dark'  → escuro, cores do Dracula
+
+   Tokens para os apps usarem nos próprios componentes:
+     --lliure-surface  fundo de card/coluna
+     --lliure-raised   fundo de item dentro de um card
+     --lliure-shadow   sombra de card
+#}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap">
+<style>
+    /* ---------------------------------------------------------- cores: claro */
+    :root {
+        --soft-page: #f8f9fa;
+        --soft-surface: #fff;
+        --soft-raised: #f8f9fa;
+        --soft-text: #67748e;
+        --soft-heading: #344767;
+        --soft-muted: #8392ab;
+        --soft-line: #e9ecef;
+        --soft-input-line: #d2d6da;
+        --soft-grad-a: #7928ca;
+        --soft-grad-b: #ff0080;
+        --soft-focus: #e293d3;
+        --soft-icon-bg: #fff;
+        --soft-active-bg: #fff;
+        --soft-shadow: 0 20px 27px 0 rgba(0, 0, 0, .05);
+        --soft-shadow-sm: 0 .3125rem .625rem 0 rgba(0, 0, 0, .12);
+        --soft-hr: rgba(0, 0, 0, .4);
+        --soft-danger: #ea0606;
+    }
+
+    /* --------------------------------------------------------- cores: escuro */
+    :root[data-bs-theme="dark"] {
+        --soft-page: #1e1f29;
+        --soft-surface: #282a36;
+        --soft-raised: #343746;
+        --soft-text: #c9cbd6;
+        --soft-heading: #f8f8f2;
+        --soft-muted: #6272a4;
+        --soft-line: #44475a;
+        --soft-input-line: #44475a;
+        --soft-grad-a: #bd93f9;
+        --soft-grad-b: #ff79c6;
+        --soft-focus: #bd93f9;
+        --soft-icon-bg: #343746;
+        --soft-active-bg: #282a36;
+        --soft-shadow: 0 20px 27px 0 rgba(0, 0, 0, .28);
+        --soft-shadow-sm: 0 .3125rem .625rem 0 rgba(0, 0, 0, .35);
+        --soft-hr: rgba(248, 248, 242, .35);
+        --soft-danger: #ff5555;
+    }
+
+    /* ------------------------------------------------ cores → Bootstrap/lliure */
+    :root, :root[data-bs-theme="dark"] {
+        --lliure-brand: var(--soft-grad-a);
+        --lliure-brand-dark: var(--soft-grad-b);
+        --lliure-surface: var(--soft-surface);
+        --lliure-raised: var(--soft-raised);
+        --lliure-shadow: var(--soft-shadow);
+
+        --bs-body-font-family: "Open Sans", system-ui, sans-serif;
+        --bs-body-bg: var(--soft-page);
+        --bs-body-color: var(--soft-text);
+        --bs-emphasis-color: var(--soft-heading);
+        --bs-heading-color: var(--soft-heading);
+        --bs-secondary-color: var(--soft-muted);
+        --bs-secondary-bg: var(--soft-raised);
+        --bs-tertiary-bg: var(--soft-page);
+        --bs-border-color: var(--soft-line);
+        --bs-primary: var(--soft-grad-a);
+        --bs-link-color: var(--soft-grad-a);
+        --bs-link-hover-color: var(--soft-grad-b);
+        --bs-danger: var(--soft-danger);
+        --bs-border-radius: .5rem;
+        --bs-border-radius-lg: 1rem;
+    }
+
+    body, .app-main, .bg-body-tertiary { background-color: var(--soft-page) !important; color: var(--soft-text); }
+    h1, h2, h3, h4, h5, h6, .h3 { color: var(--soft-heading); font-weight: 700; }
+
+    /* ------------------------------------------------------------- cabeçalho */
+    .app-header.navbar-lliure {
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+    .app-header.navbar-lliure .nav-link,
+    .app-header.navbar-lliure .navbar-nav .nav-link,
+    .app-header.navbar-lliure .dropdown-toggle::after { color: var(--soft-heading) !important; }
+    .app-header.navbar-lliure .nav-link:hover { color: var(--soft-grad-a) !important; }
+
+    /* ----------------------------------------------------------- menu lateral */
+    .app-sidebar {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: 0 !important;
+    }
+    .app-sidebar .sidebar-brand {
+        border: 0 !important;
+        position: relative;
+    }
+    .app-sidebar .sidebar-brand::after {
+        content: "";
+        position: absolute; left: 1.25rem; right: 1.25rem; bottom: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--soft-hr), transparent);
+    }
+    .app-sidebar .brand-text,
+    .app-sidebar .brand-logo-svg { color: var(--soft-heading) !important; }
+
+    .app-sidebar .sidebar-menu .nav-item { margin: .1rem .75rem; }
+    .app-sidebar .sidebar-menu .nav-link {
+        display: flex; align-items: center;
+        padding: .55rem .75rem;
+        border-radius: .5rem;
+        color: var(--soft-text) !important;
+        background: transparent !important;
+        font-size: .875rem;
+        font-weight: 600;
+        transition: background-color .15s, box-shadow .15s;
+    }
+    .app-sidebar .sidebar-menu .nav-link p { color: inherit; margin: 0; flex: 1; display: flex; align-items: center; }
+    .app-sidebar .sidebar-menu .nav-link .nav-icon {
+        flex: 0 0 32px; width: 32px; height: 32px;
+        display: inline-flex; align-items: center; justify-content: center;
+        margin-right: .75rem;
+        border-radius: .5rem;
+        background: var(--soft-icon-bg);
+        box-shadow: var(--soft-shadow-sm);
+        color: var(--soft-heading);
+        font-size: .8rem;
+    }
+    .app-sidebar .sidebar-menu .nav-link:hover { color: var(--soft-heading) !important; }
+    .app-sidebar .sidebar-menu .nav-link.active {
+        background: var(--soft-active-bg) !important;
+        box-shadow: var(--soft-shadow);
+        color: var(--soft-heading) !important;
+    }
+    .app-sidebar .sidebar-menu .nav-link.active .nav-icon {
+        background-image: linear-gradient(310deg, var(--soft-grad-a), var(--soft-grad-b));
+        color: #fff;
+    }
+    /* Grupo aberto: só o título, sem destaque (o destaque é do item ativo). */
+    .app-sidebar .sidebar-menu .menu-open > .nav-link,
+    .app-sidebar .sidebar-menu .nav-item > .nav-link.active:has(+ .nav-treeview) {
+        background: transparent !important;
+        box-shadow: none;
+        color: var(--soft-muted) !important;
+        text-transform: uppercase;
+        font-size: .7rem;
+        letter-spacing: .02em;
+        font-weight: 700;
+    }
+    .app-sidebar .sidebar-menu .nav-item > .nav-link:has(+ .nav-treeview) .nav-icon { display: none; }
+    .app-sidebar .sidebar-menu .nav-treeview .nav-item { margin: .1rem 0; }
+    .app-sidebar .nav-badge { background: var(--soft-raised) !important; color: var(--soft-heading) !important; }
+
+    @media (max-width: 991.98px) {
+        .app-sidebar { background: var(--soft-page) !important; box-shadow: var(--soft-shadow) !important; }
+    }
+
+    /* ------------------------------------------------------------- conteúdo */
+    .app-content-header h3 { font-size: 1.5rem; }
+
+    .card, .modal-content {
+        background-color: var(--soft-surface);
+        border: 0;
+        border-radius: 1rem;
+        box-shadow: var(--soft-shadow);
+    }
+    .card-title { float: none; color: var(--soft-heading); font-weight: 700; }
+    .dropdown-menu {
+        background-color: var(--soft-surface);
+        border: 0;
+        border-radius: .5rem;
+        box-shadow: 0 8px 26px -4px rgba(20, 20, 20, .15), 0 8px 9px -5px rgba(20, 20, 20, .06);
+        padding: .5rem;
+    }
+    .dropdown-item { border-radius: .5rem; color: var(--soft-text); }
+    .dropdown-item:hover { background: var(--soft-raised); color: var(--soft-heading); }
+
+    .btn {
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: -.025rem;
+        font-size: .75rem;
+        border-radius: .5rem;
+        padding: .6rem 1.5rem;
+        box-shadow: 0 4px 7px -1px rgba(0, 0, 0, .11), 0 2px 4px -1px rgba(0, 0, 0, .07);
+        transition: all .15s ease-in;
+    }
+    .btn-sm { padding: .45rem 1.25rem; font-size: .7rem; }
+    .btn:hover { transform: scale(1.02); box-shadow: 0 7px 14px rgba(50, 50, 93, .1), 0 3px 6px rgba(0, 0, 0, .08); }
+    .btn-primary, .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+        background-color: var(--soft-grad-a) !important;
+        background-image: linear-gradient(310deg, var(--soft-grad-a), var(--soft-grad-b)) !important;
+        border: 0 !important;
+        color: #fff !important;
+    }
+    .btn-outline-secondary { border-color: var(--soft-muted); color: var(--soft-muted); }
+    .btn-outline-secondary:hover { background: transparent; color: var(--soft-heading); border-color: var(--soft-heading); }
+
+    .form-control, .form-select {
+        background-color: var(--soft-surface);
+        border: 1px solid var(--soft-input-line);
+        border-radius: .5rem;
+        color: var(--soft-heading);
+        font-size: .875rem;
+    }
+    .form-control::placeholder { color: var(--soft-muted); }
+    .form-control:focus, .form-select:focus {
+        background-color: var(--soft-surface);
+        border-color: var(--soft-focus);
+        box-shadow: 0 0 0 2px color-mix(in srgb, var(--soft-focus) 45%, transparent);
+        color: var(--soft-heading);
+    }
+    .form-label { color: var(--soft-heading); font-weight: 700; font-size: .75rem; }
+
+    .text-danger { color: var(--soft-danger) !important; }
+
+    .app-footer {
+        background: transparent !important;
+        border: 0 !important;
+        color: var(--soft-muted);
+        font-size: .8rem;
+    }
+    .app-footer strong { color: var(--soft-muted); font-weight: 600; }
+</style>

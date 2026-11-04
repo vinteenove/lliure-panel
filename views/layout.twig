@@ -1,6 +1,10 @@
 <!DOCTYPE html>
+{#  panel.theme escolhe o arquivo em views/themes/; o sufixo "-dark" liga o modo
+    escuro do mesmo tema (ex.: 'soft' e 'soft-dark'). 'dracula' é sempre escuro. #}
 {% set tema = panel.theme ?? null %}
-<html lang="pt-BR"{% if tema == 'dracula' %} data-bs-theme="dark"{% endif %}>
+{% set escuro = tema == 'dracula' or (tema and tema ends with '-dark') %}
+{% set arquivoTema = tema ? tema | replace({'-dark': ''}) : null %}
+<html lang="pt-BR"{% if escuro %} data-bs-theme="dark"{% endif %}>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -44,7 +48,7 @@
             width: auto;
         }
     </style>
-    {% if tema %}{% include "themes/" ~ tema ~ ".twig" ignore missing %}{% endif %}
+    {% if arquivoTema %}{% include "themes/" ~ arquivoTema ~ ".twig" ignore missing %}{% endif %}
     {% block styles %}{% endblock %}
 </head>
 {# O menu lateral aparece quando há itens registrados pelos apps
@@ -110,7 +114,8 @@
         {% block sidebar %}
         {% if hasSidebar %}
         {% import _self as menu %}
-        <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+        {# O menu é sempre escuro no AdminLTE; no tema soft ele segue a página. #}
+        <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="{{ arquivoTema == 'soft' and not escuro ? 'light' : 'dark' }}">
             <div class="sidebar-brand">
                 <a href="{{ basePath }}/" class="brand-link">
                     {% if panel.sidebar_logo is defined and panel.sidebar_logo %}<span class="brand-logo-svg">{{ panel.sidebar_logo | raw }}</span>{% else %}<span class="brand-text fw-semibold">{{ panel.sidebar_title | default(appName) }}</span>{% endif %}
