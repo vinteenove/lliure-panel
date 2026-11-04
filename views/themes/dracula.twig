@@ -1,0 +1,128 @@
+{#
+   Tema Dracula (https://draculatheme.com) para o lliure-panel.
+   Ligado com panel.theme = 'dracula'. Funciona por cima do modo escuro do
+   Bootstrap 5.3 (data-bs-theme="dark"), trocando as cores pelas da paleta.
+
+   Paleta: fundo #282a36 · linha atual #44475a · texto #f8f8f2 · comentário #6272a4
+           ciano #8be9fd · verde #50fa7b · laranja #ffb86c · rosa #ff79c6
+           roxo #bd93f9 · vermelho #ff5555 · amarelo #f1fa8c
+#}
+<style>
+    :root[data-bs-theme="dark"] {
+        --dracula-bg: #282a36;
+        --dracula-bg-dark: #21222c;
+        --dracula-bg-darker: #191a21;
+        --dracula-line: #44475a;
+        --dracula-fg: #f8f8f2;
+        --dracula-comment: #6272a4;
+        --dracula-cyan: #8be9fd;
+        --dracula-green: #50fa7b;
+        --dracula-orange: #ffb86c;
+        --dracula-pink: #ff79c6;
+        --dracula-purple: #bd93f9;
+        --dracula-red: #ff5555;
+        --dracula-yellow: #f1fa8c;
+
+        /* A marca do app vira o roxo da paleta; o tom escuro é o rosa, para
+           hover e destaque. */
+        --lliure-brand: var(--dracula-purple);
+        --lliure-brand-dark: var(--dracula-pink);
+
+        --bs-body-bg: var(--dracula-bg);
+        --bs-body-bg-rgb: 40, 42, 54;
+        --bs-body-color: var(--dracula-fg);
+        --bs-body-color-rgb: 248, 248, 242;
+        --bs-emphasis-color: #fff;
+        --bs-secondary-color: rgba(248, 248, 242, .7);
+        --bs-tertiary-color: var(--dracula-comment);
+        --bs-secondary-bg: var(--dracula-bg-dark);
+        --bs-tertiary-bg: var(--dracula-bg-darker);
+        --bs-tertiary-bg-rgb: 25, 26, 33;
+        --bs-border-color: var(--dracula-line);
+        --bs-border-color-translucent: rgba(98, 114, 164, .35);
+        --bs-heading-color: var(--dracula-fg);
+
+        --bs-primary: var(--dracula-purple);
+        --bs-primary-rgb: 189, 147, 249;
+        --bs-secondary: var(--dracula-comment);
+        --bs-secondary-rgb: 98, 114, 164;
+        --bs-success: var(--dracula-green);
+        --bs-success-rgb: 80, 250, 123;
+        --bs-info: var(--dracula-cyan);
+        --bs-info-rgb: 139, 233, 253;
+        --bs-warning: var(--dracula-orange);
+        --bs-warning-rgb: 255, 184, 108;
+        --bs-danger: var(--dracula-red);
+        --bs-danger-rgb: 255, 85, 85;
+
+        --bs-link-color: var(--dracula-cyan);
+        --bs-link-color-rgb: 139, 233, 253;
+        --bs-link-hover-color: var(--dracula-pink);
+        --bs-link-hover-color-rgb: 255, 121, 198;
+        --bs-focus-ring-color: rgba(189, 147, 249, .35);
+    }
+
+    [data-bs-theme="dark"] body,
+    [data-bs-theme="dark"] .app-main { background-color: var(--dracula-bg) !important; }
+
+    /* Topo e menu lateral no tom mais escuro, com o roxo como destaque. */
+    [data-bs-theme="dark"] .app-header.navbar-lliure {
+        background-color: var(--dracula-bg-dark) !important;
+        border-bottom: 1px solid var(--dracula-line);
+    }
+    [data-bs-theme="dark"] .app-header.navbar-lliure .navbar-brand-logo,
+    [data-bs-theme="dark"] .app-header.navbar-lliure .navbar-brand-logo .text-white { color: var(--dracula-purple) !important; }
+    [data-bs-theme="dark"] .app-sidebar { background-color: var(--dracula-bg-darker) !important; }
+    [data-bs-theme="dark"] .app-sidebar .sidebar-brand { border-bottom-color: var(--dracula-line); }
+    [data-bs-theme="dark"] .app-sidebar .brand-text { color: var(--dracula-fg); }
+    [data-bs-theme="dark"] .sidebar-menu .nav-link { color: rgba(248, 248, 242, .75); }
+    [data-bs-theme="dark"] .sidebar-menu .nav-link:hover { color: var(--dracula-fg); background-color: var(--dracula-line); }
+    [data-bs-theme="dark"] .sidebar-menu .nav-link.active,
+    [data-bs-theme="dark"] .sidebar-menu .menu-open > .nav-link {
+        color: var(--dracula-bg) !important;
+        background-color: var(--dracula-purple) !important;
+    }
+    [data-bs-theme="dark"] .sidebar-menu .nav-treeview .nav-link.active {
+        color: var(--dracula-purple) !important;
+        background-color: rgba(189, 147, 249, .12) !important;
+    }
+
+    /* Botões e formulários */
+    [data-bs-theme="dark"] .btn-primary {
+        --bs-btn-color: var(--dracula-bg);
+        --bs-btn-bg: var(--dracula-purple);
+        --bs-btn-border-color: var(--dracula-purple);
+        --bs-btn-hover-color: var(--dracula-bg);
+        --bs-btn-hover-bg: var(--dracula-pink);
+        --bs-btn-hover-border-color: var(--dracula-pink);
+        --bs-btn-active-bg: var(--dracula-pink);
+        --bs-btn-active-border-color: var(--dracula-pink);
+    }
+    [data-bs-theme="dark"] .form-control,
+    [data-bs-theme="dark"] .form-select {
+        background-color: var(--dracula-bg-darker);
+        border-color: var(--dracula-line);
+        color: var(--dracula-fg);
+    }
+    [data-bs-theme="dark"] .form-control::placeholder { color: var(--dracula-comment); }
+    [data-bs-theme="dark"] .form-control:focus,
+    [data-bs-theme="dark"] .form-select:focus {
+        border-color: var(--dracula-purple);
+        box-shadow: 0 0 0 .2rem rgba(189, 147, 249, .25);
+    }
+
+    [data-bs-theme="dark"] .card,
+    [data-bs-theme="dark"] .modal-content,
+    [data-bs-theme="dark"] .dropdown-menu {
+        background-color: var(--dracula-bg-dark);
+        border-color: var(--dracula-line);
+    }
+    [data-bs-theme="dark"] .dropdown-item:hover { background-color: var(--dracula-line); }
+    [data-bs-theme="dark"] .app-footer {
+        background-color: var(--dracula-bg-dark);
+        border-top-color: var(--dracula-line);
+        color: var(--dracula-comment);
+    }
+    [data-bs-theme="dark"] .text-danger { color: var(--dracula-red) !important; }
+    [data-bs-theme="dark"] .badge.text-bg-light { background-color: var(--dracula-line) !important; color: var(--dracula-fg) !important; }
+</style>
