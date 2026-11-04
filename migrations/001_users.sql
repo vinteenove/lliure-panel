@@ -12,6 +12,10 @@ CREATE TABLE IF NOT EXISTS `lliure_users` (
     UNIQUE KEY `uk_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Usuário admin padrão (senha: admin123)
-INSERT INTO `lliure_users` (`username`, `email`, `password_hash`, `name`, `active`)
-VALUES ('admin', 'admin@lliure.local', '$2y$10$QAQpVuFdX38UrEuh710b..atUJfJnTeffZF1/S3Tg0q1QtkGVAEfC', 'Administrador', 1);
+-- Nenhum usuário é criado aqui. Até a v2.0.0-alpha.1 esta migração criava o
+-- usuário `admin` com uma senha fixa, conhecida por quem lesse este arquivo.
+-- O primeiro usuário passa a ser criado pela tela de boas-vindas (welcome),
+-- com a senha escolhida por quem instala.
+--
+-- Instalações antigas: se existir um `admin` que nunca teve a senha trocada,
+-- troque-a (ou desative o usuário).

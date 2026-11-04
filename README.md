@@ -103,6 +103,13 @@ lê `etc/database.php` na raiz do projeto), cuida da sessão (30 dias) e faz o
 login com a tabela `lliure_users` (`migrations/001_users.sql`). É o caso do
 espalu e do musicasdeigreja.
 
+A migração não cria nenhum usuário. O primeiro vai ser criado por uma tela de
+boas-vindas (welcome), com a senha escolhida por quem instala. A tela ainda
+não existe; até lá, o primeiro usuário entra direto no banco. Até a
+`v2.0.0-alpha.1`, a
+migração criava um `admin` com senha fixa. Em instalações dessa época, confira
+se esse usuário existe e troque a senha dele.
+
 **Embarcado.** O lliure-panel sobe dentro de outro sistema que já tem
 usuário, banco e sessão. É o caso do Vimu, onde login, instância e
 permissões continuam sendo do Vimu. Nesse modo:
