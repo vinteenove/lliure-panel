@@ -226,11 +226,13 @@
             </div>
         </main>
 
-        <!-- Footer -->
+        <!-- Footer (a tela pode esvaziar o bloco, ex.: telas de tela cheia) -->
+        {% block footer %}
         <footer class="app-footer">
             <div class="float-end d-none d-sm-inline">v{{ appVersion | default('2.0.0') }}</div>
             <strong>{{ appName | default('lliure') | lower }}</strong>
         </footer>
+        {% endblock %}
     </div>
 
     {% block user_panel %}
