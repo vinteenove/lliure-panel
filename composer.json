@@ -1,6 +1,6 @@
 {
-    "name": "vinteenove/lliure",
-    "description": "App base do lliure — bootstrap, roteamento e layout compartilhado",
+    "name": "vinteenove/lliure-panel",
+    "description": "Lliure v2 — casca compartilhada dos apps: bootstrap, layout, menu e login",
     "type": "library",
     "require": {
         "php": "^8.0",
