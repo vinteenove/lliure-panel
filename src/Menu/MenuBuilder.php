@@ -32,7 +32,7 @@ class MenuBuilder
 
     public function getItems(): array
     {
-        // [spike] Item cuja visibilidade for negada não chega ao template.
+        // Item cuja visibilidade for negada não chega ao template.
         $items = array_values(array_filter($this->items, fn(MenuItem $i) => $i->isVisible()));
         usort($items, fn(MenuItem $a, MenuItem $b) => $a->order <=> $b->order);
         return $items;

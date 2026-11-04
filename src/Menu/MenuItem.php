@@ -12,7 +12,7 @@ class MenuItem
     public int $order = 0;
 
     /**
-     * [spike] Visibilidade opcional: callback avaliado na montagem do menu.
+     * Visibilidade opcional: callback avaliado na montagem do menu.
      * Serve para esconder item que o usuário não pode acessar — quem decide é
      * quem hospeda (no Vimu, as permissões da instância). Null = sempre visível,
      * então nada muda para quem não usa.

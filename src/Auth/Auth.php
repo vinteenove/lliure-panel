@@ -77,7 +77,7 @@ class Auth
     }
 
     /**
-     * [spike] Identidade externa — coexistência v1↔v2.
+     * Identidade externa — coexistência v1↔v2.
      *
      * Sob o Vimu quem autentica é o v1 (sessão `ll`), e não existe linha em
      * `lliure_users` para o usuário logado. O resolver traduz a sessão de quem

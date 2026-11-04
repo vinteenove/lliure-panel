@@ -54,7 +54,7 @@ class Bootstrap
 
     private function loadAutoloader(): void
     {
-        // [spike] Modo embarcado: quando o Bootstrap sobe dentro de outro processo
+        // Modo embarcado: quando o Bootstrap sobe dentro de outro processo
         // (o Vimu v1), o autoloader já está carregado e não existe vendor/ próprio
         // para exigir. Só carrega se ninguém carregou antes.
         if (class_exists(\Composer\Autoload\ClassLoader::class, false)) {
@@ -90,7 +90,7 @@ class Bootstrap
             return;
         }
 
-        // [spike] Coexistência v1↔v2: se o processo já tem conexão dibi aberta (o
+        // Coexistência v1↔v2: se o processo já tem conexão dibi aberta (o
         // Vimu conecta em panel/etc/bdconf.php), REUSA. Um segundo dibi::connect()
         // substitui self::$connection e troca o banco debaixo dos models de quem
         // conectou antes — é a colisão que inviabiliza rodar os dois juntos.
@@ -99,7 +99,7 @@ class Bootstrap
             return;
         }
 
-        // [spike] Falha de conexão não pode ser silenciosa: o catch anterior
+        // Falha de conexão não pode ser silenciosa: o catch anterior
         // transformava credencial errada em 500 mudo, sem rastro.
         \dibi::connect($this->config['database']);
         $this->dbConnected = true;
