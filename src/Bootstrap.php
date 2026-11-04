@@ -109,9 +109,22 @@ class Bootstrap
     {
         $viewsDir = dirname(__DIR__) . '/views';
         $loader = new FilesystemLoader($viewsDir);
+
+        $debug = $this->config['app']['debug'] ?? false;
+
+        // Sem cache o Twig recompila o template a cada requisicao. Medido:
+        // 105 ms na pagina de cifra, contra 7 ms com o cache quente.
+        $cacheTwig = $debug ? false : dirname(__DIR__, 2) . '/cache/twig';
+        if ($cacheTwig && !is_dir($cacheTwig)) {
+            @mkdir($cacheTwig, 0775, true);
+        }
+
         $this->twig = new Environment($loader, [
-            'cache' => false,
-            'debug' => $this->config['app']['debug'] ?? false,
+            'cache' => $cacheTwig,
+            'debug' => $debug,
+            // com debug=false o auto_reload vem desligado por padrao, e o
+            // Twig passaria a ignorar template alterado ate limpar o cache
+            'auto_reload' => true,
         ]);
     }
 
