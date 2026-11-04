@@ -68,7 +68,10 @@
     /* Topo e menu lateral no tom mais escuro, com o roxo como destaque. */
     [data-bs-theme="dark"] .app-header.navbar-lliure {
         background-color: var(--dracula-bg-dark) !important;
-        border-bottom: 1px solid var(--dracula-line);
+        /* Linha por dentro (box-shadow), não borda: borda soma 1px na altura
+           e desalinha da linha do topo do menu lateral. */
+        border-bottom: 0 !important;
+        box-shadow: inset 0 -1px 0 var(--dracula-line) !important;
     }
     [data-bs-theme="dark"] .app-header.navbar-lliure .navbar-brand-logo,
     [data-bs-theme="dark"] .app-header.navbar-lliure .navbar-brand-logo .text-white { color: var(--dracula-purple) !important; }
