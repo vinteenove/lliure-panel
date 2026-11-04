@@ -33,6 +33,12 @@
         .app-header.navbar-lliure .dropdown-toggle::after {
             color: rgba(255,255,255,.85);
         }
+        .sidebar-brand .brand-logo-svg { color: #fff; display: inline-flex; align-items: center; }
+        .sidebar-brand .brand-logo-svg svg {
+            height: {{ panel.sidebar_logo_height | default('30px') }};
+            width: auto;
+            max-width: 100%;
+        }
         .navbar-brand-logo svg {
             height: {{ panel.navbar_logo_height | default('27px') }};
             width: auto;
@@ -61,11 +67,14 @@
                     </li>
                     {% endif %}
                     {% endblock %}
+                    {# Com menu lateral, a marca fica no topo dele (sem repetir aqui). #}
+                    {% if not hasSidebar %}
                     <li class="nav-item d-none d-md-block navbar-brand-logo">
                         <a href="{{ basePath }}/" class="nav-link py-1">
                             {{ panel.navbar_logo | raw }}
                         </a>
                     </li>
+                    {% endif %}
                     {% block navbar_left %}{% endblock %}
                 </ul>
 
@@ -104,7 +113,7 @@
         <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
             <div class="sidebar-brand">
                 <a href="{{ basePath }}/" class="brand-link">
-                    <span class="brand-text fw-semibold">{{ panel.sidebar_title | default(appName) }}</span>
+                    {% if panel.sidebar_logo is defined and panel.sidebar_logo %}<span class="brand-logo-svg">{{ panel.sidebar_logo | raw }}</span>{% else %}<span class="brand-text fw-semibold">{{ panel.sidebar_title | default(appName) }}</span>{% endif %}
                 </a>
             </div>
             <div class="sidebar-wrapper">
