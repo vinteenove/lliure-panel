@@ -1,0 +1,32 @@
+# Publicar uma release = subir essa versão para o Vimu (produção).
+# O servidor só aceita esta chave para rodar /usr/local/bin/deploy-app,
+# que faz checkout da tag, regenera o autoload se precisar e limpa o cache.
+name: Deploy
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag a subir (ex. v1.2.0) — serve para voltar uma versão
+        required: true
+
+concurrency: deploy-vimu
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Subir no Vimu
+        env:
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy && chmod 600 ~/.ssh/deploy
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy -o BatchMode=yes "$HOST" "lliure-panel $TAG"
