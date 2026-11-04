@@ -1,13 +1,13 @@
 {#
    Tema Soft (inspirado no Soft UI Dashboard da Creative Tim, MIT).
    Muda o jeito do AdminLTE sem trocar a estrutura dele: menu sem fundo com
-   ícones em quadradinhos (o ativo em gradiente), cabeçalho transparente,
+   ícones em quadradinhos (o ativo na cor da marca), cabeçalho transparente,
    cards sem borda com sombra suave, cantos de 1rem e botões em caixa alta.
 
    Duas paletas, só de cor:
      panel.theme = 'soft'       → claro, neutros originais do Soft UI
-     panel.theme = 'soft-dark'  → escuro, neutros do Dracula
-   O destaque (gradiente, botão, item ativo) é sempre a cor da marca do app
+     panel.theme = 'soft-dark'  → escuro, neutros do Dracula (draculatheme.com/spec)
+   O destaque (botão, item ativo), sólido, é sempre a cor da marca do app
    (panel.brand_color).
 
    Tokens para os apps usarem nos próprios componentes:
@@ -28,10 +28,6 @@
         --soft-muted: #8392ab;
         --soft-line: #e9ecef;
         --soft-input-line: #d2d6da;
-        /* Gradiente na cor da marca do app (panel.brand_color): do tom puro a
-           um mais claro, no mesmo matiz. */
-        --soft-grad-a: var(--lliure-brand);
-        --soft-grad-b: color-mix(in srgb, var(--lliure-brand) 62%, #fff);
         --soft-accent-text: var(--lliure-brand);
         --soft-focus: color-mix(in srgb, var(--lliure-brand) 55%, #fff);
         --soft-icon-bg: #fff;
@@ -44,13 +40,13 @@
 
     /* --------------------------------------------------------- cores: escuro */
     :root[data-bs-theme="dark"] {
-        --soft-page: #1e1f29;
-        --soft-surface: #282a36;
-        --soft-raised: #343746;
-        --soft-text: #c9cbd6;
+        --soft-page: #21222c;        /* Dracula: Background Dark */
+        --soft-surface: #282a36;     /* Dracula: Background */
+        --soft-raised: #343746;      /* Dracula: Background Light / floating */
+        --soft-text: #f8f8f2;        /* Dracula: Foreground */
         --soft-heading: #f8f8f2;
-        --soft-muted: #6272a4;
-        --soft-line: #44475a;
+        --soft-muted: #6272a4;       /* Dracula: Comment */
+        --soft-line: #44475a;        /* Dracula: Selection */
         --soft-input-line: #44475a;
         /* No escuro o roxo puro some no fundo: texto e foco usam a marca clareada. */
         --soft-accent-text: color-mix(in srgb, var(--lliure-brand) 50%, #fff);
@@ -60,7 +56,7 @@
         --soft-shadow: 0 20px 27px 0 rgba(0, 0, 0, .28);
         --soft-shadow-sm: 0 .3125rem .625rem 0 rgba(0, 0, 0, .35);
         --soft-hr: rgba(248, 248, 242, .35);
-        --soft-danger: #ff5555;
+        --soft-danger: #ff5555;      /* Dracula: Red */
     }
 
     /* ------------------------------------------------ cores → Bootstrap/lliure */
@@ -149,7 +145,7 @@
         color: var(--soft-heading) !important;
     }
     .app-sidebar .sidebar-menu .nav-link.active .nav-icon {
-        background-image: linear-gradient(310deg, var(--soft-grad-a), var(--soft-grad-b));
+        background: var(--lliure-brand);
         color: #fff;
     }
     /* Grupo aberto: só o título, sem destaque (o destaque é do item ativo). */
@@ -204,8 +200,8 @@
     .btn-sm { padding: .45rem 1.25rem; font-size: .7rem; }
     .btn:hover { transform: scale(1.02); box-shadow: 0 7px 14px rgba(50, 50, 93, .1), 0 3px 6px rgba(0, 0, 0, .08); }
     .btn-primary, .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
-        background-color: var(--soft-grad-a) !important;
-        background-image: linear-gradient(310deg, var(--soft-grad-a), var(--soft-grad-b)) !important;
+        background-color: var(--lliure-brand) !important;
+        background-image: none !important;
         border: 0 !important;
         color: #fff !important;
     }
