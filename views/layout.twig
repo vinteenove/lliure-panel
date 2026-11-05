@@ -108,9 +108,11 @@
             <div class="container-fluid">
                 <ul class="navbar-nav">
                     {% block navbar_left_toggle %}
+                    {# Só em tela pequena, onde o menu fica escondido: no desktop
+                       (sidebar-expand-lg) ele está sempre aberto, como no Soft UI. #}
                     {% if hasSidebar %}
-                    <li class="nav-item">
-                        <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button" aria-label="Recolher menu">
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button" aria-label="Abrir menu">
                             <i class="fas fa-bars"></i>
                         </a>
                     </li>
