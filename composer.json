@@ -5,12 +5,12 @@
     "require": {
         "php": "^8.0",
         "lliure/lliure-core": "^v6",
-        "lliure/helpers": "^v2",
-        "lliure/lllog": "^v1.11",
-        "lliure/twig-translate": "^v0.6",
         "lliure/router": "^v0",
-        "twig/twig": "^3.0",
-        "almasaeed2010/adminlte": "4.0.0-RC3"
+        "dibi/dibi": "^v4",
+        "psr/http-message": "^1.0",
+        "psr/http-server-handler": "^1.0",
+        "psr/http-server-middleware": "^1.0",
+        "twig/twig": "^3.0"
     },
     "autoload": {
         "psr-4": {

@@ -20,6 +20,9 @@ class Bootstrap
     private string $basePath = '';
     private array $panelConfig = [];
 
+    /** Project root (where vendor/ and cache/ live). Null = the folder above this package. */
+    private static ?string $projectRoot = null;
+
     private function __construct()
     {
         $this->loadAutoloader();
@@ -27,6 +30,21 @@ class Bootstrap
         $this->initDatabase();
         $this->initTwig();
         $this->menuBuilder = MenuBuilder::getInstance();
+    }
+
+    /**
+     * Tells where the host project lives. Call before getInstance(): Twig is
+     * set up in the constructor. Needed when the package is installed under
+     * vendor/, where "the folder above" is vendor/vinteenove.
+     */
+    public static function setProjectRoot(string $dir): void
+    {
+        self::$projectRoot = rtrim($dir, '/\\');
+    }
+
+    private static function projectRoot(): string
+    {
+        return self::$projectRoot ?? dirname(__DIR__, 2);
     }
 
     public static function getInstance(): self
@@ -61,7 +79,7 @@ class Bootstrap
             return;
         }
 
-        $autoloadPath = dirname(__DIR__, 2) . '/vendor/autoload.php';
+        $autoloadPath = self::projectRoot() . '/vendor/autoload.php';
         if (!file_exists($autoloadPath)) {
             throw new \RuntimeException('vendor/autoload.php não encontrado. Rode composer install na raiz.');
         }
@@ -114,7 +132,7 @@ class Bootstrap
 
         // Sem cache o Twig recompila o template a cada requisicao. Medido:
         // 105 ms na pagina de cifra, contra 7 ms com o cache quente.
-        $cacheTwig = $debug ? false : dirname(__DIR__, 2) . '/cache/twig';
+        $cacheTwig = $debug ? false : self::projectRoot() . '/cache/twig';
         if ($cacheTwig && !is_dir($cacheTwig)) {
             @mkdir($cacheTwig, 0775, true);
         }
