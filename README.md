@@ -52,31 +52,87 @@ A primeira tag, `v2.0.0-alpha.1`, marca esse ponto de encontro.
 
 ```
 projeto/
-├── composer.json      ← junta lliure/ e os apps num vendor só (merge-plugin)
+├── composer.json      ← requer vinteenove/lliure-panel e junta os apps (merge-plugin)
 ├── etc/database.php   ← credenciais (fora do git)
-├── lliure/            ← clone deste repositório (ignorado pelo git do projeto)
+├── vendor/vinteenove/lliure-panel/   ← este pacote, instalado pelo composer
+├── cache/twig/        ← cache do Twig (apagar a cada deploy)
 ├── cifras/            ← um app, com repositório próprio
 └── site/              ← outro app
 ```
 
-O `composer.json` da raiz usa o `wikimedia/composer-merge-plugin` para
-incluir `lliure/composer.json` e o `composer.json` de cada app.
+O lliure-panel entra pelo composer, como qualquer pacote. O repositório é
+privado, então o projeto declara o VCS:
 
-## Contrato de um app
+```json
+"repositories": [
+  { "type": "vcs", "url": "git@github.com:vinteenove/lliure-panel.git", "no-api": true }
+],
+"require": {
+  "vinteenove/lliure-panel": "^2.0@alpha"
+}
+```
 
-Cada app expõe um provider:
+O `no-api` faz o composer clonar por SSH. Sem ele, ele tenta o zip pela API
+do GitHub, que responde 404 para repositório privado sem token. O `@alpha` é
+necessário enquanto não houver `v2.0.0` e o projeto usar
+`minimum-stability: stable`.
+
+Os apps não são pacotes publicados: cada um é um checkout na raiz, e o
+`wikimedia/composer-merge-plugin` junta o `composer.json` deles no do projeto
+(`"merge-plugin": {"include": ["cifras/composer.json"]}`).
+
+Até a `v2.0.0-alpha.5`, o lliure-panel era um clone em `lliure/` na raiz do
+projeto, carregado por um autoload escrito à mão. Essas tags não instalam pelo
+composer: elas exigem o AdminLTE como pacote, e ele não é `stable`. Use a
+`v2.0.0-alpha.6` ou mais nova.
+
+## Criar um app
+
+O gabarito é o [pipeline](https://github.com/vinteenove/pipeline), o
+primeiro app desta geração em produção. O segundo, o
+[Fiscon](https://github.com/vinteenove/Fiscon), seguiu a mesma forma.
+
+### Pastas
+
+```
+cifras/
+├── composer.json    ← só o autoload do app (nada de require do lliure-panel)
+├── src/             ← AppServiceProvider, Controllers, Models
+├── views/           ← templates Twig, acessados como @cifras/...
+├── migrations/      ← 001_xxx.sql, 002_xxx.sql... idempotentes
+└── assets/          ← logo, favicon
+```
+
+```json
+{
+    "name": "vinteenove/cifras",
+    "type": "library",
+    "require": { "php": "^8.1" },
+    "autoload": { "psr-4": { "Cifras\\": "src/" } }
+}
+```
+
+As dependências comuns (lliure-core, router, twig, dibi) já vêm do
+lliure-panel. O app só declara o que ele usa e o projeto ainda não tem.
+
+### O provider
+
+O app implementa as duas interfaces. A de rotas é opcional no modo sozinho,
+mas o modo embarcado só conhece o app por ela:
 
 ```php
 use Lliure\Bootstrap;
 use Lliure\Menu\MenuBuilder;
 use Lliure\Menu\MenuItem;
+use Lliure\RoutesProviderInterface;
 use Lliure\ServiceProviderInterface;
+use Router\Router;
 
-class AppServiceProvider implements ServiceProviderInterface
+final class AppServiceProvider implements ServiceProviderInterface, RoutesProviderInterface
 {
     public static function boot(Bootstrap $bootstrap): void
     {
-        // registra as views do app como namespace Twig (@cifras/...)
+        // views em @cifras/...
         $bootstrap->registerApp('cifras', dirname(__DIR__));
     }
 
@@ -90,11 +146,75 @@ class AppServiceProvider implements ServiceProviderInterface
             // opcional: esconde o item de quem não pode acessar
             visible: fn(): bool => true,
         ));
+        // Vários itens sob um título: $menu->addGroup('Título', [$item, ...], 'fas fa-x', 0)
+    }
+
+    public static function routes(Router $router): void
+    {
+        $router->get('/',          [Controllers\Cifras::class, 'index']);
+        $router->post('/cifras',   [Controllers\Cifras::class, 'criar']);
+        $router->get('/cifras/{id}', [Controllers\Cifras::class, 'ver']);
     }
 }
 ```
 
-As rotas usam o `\Router\Router` (pacote `lliure/router`).
+As rotas usam o `\Router\Router` (pacote `lliure/router`). O controller
+recebe `(ServerRequestInterface $request, array $vars)` e devolve uma string
+(HTML) ou uma `ResponseInterface`.
+
+### Views
+
+Toda tela estende o layout do painel, e o resto é bloco:
+
+```twig
+{% extends "layout.twig" %}
+
+{% block title %}Cifras{% endblock %}
+{% block content_header %}Cifras{% endblock %}
+{% block content %}
+    ...
+{% endblock %}
+```
+
+| Bloco | Para que serve |
+|---|---|
+| `content` | o corpo da tela |
+| `content_header` | o título acima do corpo |
+| `title` | o `<title>` da aba |
+| `styles` | CSS próprio da tela, dentro do `<head>` |
+| `navbar_left`, `navbar_right` | itens extras na barra do topo |
+| `body_class` | classes do `<body>` (tela cheia, sem menu...) |
+| `sidebar`, `footer`, `user_panel` | trocar ou esconder essas partes; `{% block footer %}{% endblock %}` tira o rodapé |
+
+Para renderizar: `Bootstrap::getInstance()->getTwig()->render('@cifras/index.twig', $dados)`.
+
+### Banco
+
+- **Cada linha pertence a uma instância** (coluna `instance`), e toda
+  consulta filtra por ela. Peça a instância a um lugar só no app (no pipeline,
+  `Pipeline\Instancia::atual()`), nunca a uma constante espalhada. O nome é
+  `instance`, não `account`: o núcleo do Vimu chamou de `account` até
+  nov/2026 e a troca custou três releases.
+- **Migração separada do deploy.** O usuário da aplicação não roda DDL. A
+  migração roda antes de publicar, e o código precisa funcionar com ela já
+  aplicada e também sem ela (coluna nova sempre opcional na primeira versão).
+- **`SET NAMES utf8mb4` no `boot()`**, se as tabelas forem utf8mb4. A conexão
+  que o Vimu abre é utf8, e emoji vira `?`.
+
+### No Vimu
+
+Além do repositório do app, entram no repositório `vinteenove/vimu`:
+
+1. `src/Hosts/Cifras.php`, com o `AppConfig` (`provider`, `serviceId`, marca,
+   login). É ele que faz o login, a escolha de instância e o SSO serem os mesmos
+   dos outros apps.
+2. `cifras/composer.json` no `merge-plugin` da raiz, e `/cifras` no
+   `.gitignore`.
+3. Um `case` no `deploy/deploy-app` e o workflow de release no repositório do
+   app.
+
+O passo a passo, com as armadilhas que já custaram tempo, está em
+`docs/deploy-dos-apps-v2.md` no repositório do Vimu.
 
 ## Dois modos de uso
 
@@ -120,7 +240,12 @@ permissões continuam sendo do Vimu. Nesse modo:
   novo trocaria o banco por baixo de quem conectou antes;
 - quem hospeda informa o usuário logado com
   `Lliure\Auth\Auth::setIdentityResolver(fn() => ...)`, sem segundo login e
-  sem precisar de linha em `lliure_users`.
+  sem precisar de linha em `lliure_users`;
+- quem hospeda chama `Bootstrap::setProjectRoot($raiz)` **antes** do primeiro
+  `getInstance()`. É de lá que saem o `cache/twig` e o `vendor/autoload.php`.
+  Sem a chamada, vale a pasta acima do pacote, que dentro do `vendor/` é
+  `vendor/vinteenove`. O cache ficaria fora do lugar que o deploy limpa, e o
+  layout novo não apareceria.
 
 Nos dois modos, uma falha de conexão com o banco estoura na hora, em vez de
 seguir em silêncio até a primeira consulta.
@@ -132,6 +257,22 @@ seguir em silêncio até a primeira consulta.
 - `v2.0.0` quando o primeiro app construído inteiramente sobre esta geração
   (o pipeline do Vimu) estiver em produção.
 
-Cada projeto fixa a tag que usa (`git checkout v2.0.0-alpha.1` dentro de
-`lliure/`), em vez de copiar a pasta. Assim fica claro quem está em qual
-versão, e atualizar vira uma decisão de cada projeto.
+Cada projeto escolhe a versão pelo composer, e atualizar vira uma decisão de
+cada projeto:
+
+```
+composer update vinteenove/lliure-panel
+composer update vinteenove/lliure-panel --with vinteenove/lliure-panel:2.0.0-alpha.6   # uma tag exata
+```
+
+Depois de atualizar, apague o `cache/twig`: em produção o Twig não relê
+template alterado.
+
+No Vimu, publicar uma release deste repositório já sobe a versão. O workflow
+roda `deploy-app lliure-panel <tag>` no servidor, que faz o `composer update
+--with` daquela tag e limpa o cache. Para voltar uma versão, use o Run
+workflow com a tag antiga, a partir da `v2.0.0-alpha.6`.
+
+Uma tag nova deste pacote precisa funcionar com os apps que já estão em
+produção: eles sobem em dias diferentes. Para mudar um nome, mantenha o antigo
+como apelido `@deprecated` por uma release.
