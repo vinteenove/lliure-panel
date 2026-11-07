@@ -1,7 +1,13 @@
 {
     "name": "vinteenove/lliure-panel",
-    "description": "Lliure v2 — casca compartilhada dos apps: bootstrap, layout, menu e login",
+    "description": "lliure v2: the shared shell for apps — bootstrap, AdminLTE 4 layout, menu and login",
     "type": "library",
+    "license": "MIT",
+    "keywords": ["lliure", "panel", "adminlte", "twig", "shell"],
+    "homepage": "https://github.com/vinteenove/lliure-panel",
+    "authors": [
+        { "name": "Jeison Frasson", "email": "jfrasson@vinteenove.com.br" }
+    ],
     "require": {
         "php": "^8.0",
         "lliure/lliure-core": "^v6",

@@ -1,105 +1,93 @@
 # lliure-panel
 
-A casca compartilhada dos apps do lliure: bootstrap, layout, menu e login.
-O lliure-panel não tem app dentro dele. Os apps ficam na raiz de cada
-projeto, cada um no seu repositório, e o lliure-panel dá a eles o painel
-onde rodam.
+The shared shell for lliure apps: bootstrap, layout, menu and login.
+lliure-panel has no app inside it. Apps live at the root of each project,
+each in its own repository, and lliure-panel gives them the panel they run in.
 
-## Por que a versão começa no 2
+```
+composer require vinteenove/lliure-panel:^2.0@alpha
+```
 
-O lliure-panel é a **segunda geração do lliure**.
+## Why the version starts at 2
 
-A primeira geração é o painel monolítico, que segue em
+lliure-panel is the **second generation of lliure**.
+
+The first generation is the monolithic panel, still at
 [`vinteenove/lliure`](https://bitbucket.org/vinteenove/lliure) (Bitbucket),
-com versões até a `v11.x`. Nela, os apps vivem dentro do painel (`app/`,
-`opt/`, `api/`), sob o namespace `LliurePanel\`. É ela que roda hoje o
-`panel/` do Vimu, e continua lá até o último app ser migrado.
+with versions up to `v11.x`. There, apps live inside the panel (`app/`,
+`opt/`, `api/`), under the `LliurePanel\` namespace. It still runs the Vimu
+`panel/` and stays there until the last app is migrated.
 
-A segunda geração inverte essa relação: o painel vira uma casca e os apps
-ficam do lado de fora. A mudança é grande o bastante para não caber como
-"mais uma versão" da primeira. Por isso ganhou repositório próprio, e por
-isso a versão começa em `v2`: não é um projeto novo do zero, é o lliure na
-sua segunda forma.
+The second generation turns that around: the panel becomes a shell and apps
+live outside it. The change is too big to be "one more version" of the first
+one, so it got its own repository, and the version starts at `v2`: not a new
+project from scratch, but lliure in its second form.
 
-### De onde veio o código
+Not to be confused with `lliure/lliure-panel` (`v0.x`), an older and unrelated
+package.
 
-1. **Branch `v2` do `vinteenove/lliure`** (fevereiro/março de 2026): o
-   esqueleto da segunda geração (Bootstrap, Auth, Menu, layout AdminLTE 4).
-   A branch não tinha histórico em comum com a `master`, e todo esse
-   histórico veio junto para cá.
-2. **Três cópias que tinham divergido.** O espalu e o musicasdeigreja
-   copiaram essa branch para a pasta `lliure/` e foram recebendo ajustes por
-   conta própria. O Vimu fez um spike de coexistência em cima dela. Em
-   novembro de 2026 as três foram reunidas aqui:
-   - **espalu e musicasdeigreja:** sessão de 30 dias e configuração de
-     banco lida de `etc/database.php`;
-   - **musicasdeigreja:** cache do Twig;
-   - **spike do Vimu:** modo embarcado (ver abaixo).
+### Where the code came from
 
-A primeira tag, `v2.0.0-alpha.1`, marca esse ponto de encontro.
+1. **The `v2` branch of `vinteenove/lliure`** (February/March 2026): the
+   skeleton of the second generation (Bootstrap, Auth, Menu, AdminLTE 4
+   layout). The branch shared no history with `master`, and all of that
+   history came along.
+2. **Three copies that had drifted apart.** Two projects copied that branch
+   into a `lliure/` folder and kept adjusting it on their own, and Vimu built a
+   coexistence spike on top of it. In November 2026 the three were merged
+   here: 30-day sessions, database config read from `etc/database.php`, the
+   Twig cache, and the embedded mode (see below).
 
-## O que muda de uma geração para a outra
+The first tag, `v2.0.0-alpha.1`, marks that meeting point.
 
-| | 1ª geração (`vinteenove/lliure`) | 2ª geração (`lliure-panel`) |
+## What changes between generations
+
+| | 1st generation (`vinteenove/lliure`) | 2nd generation (`lliure-panel`) |
 |---|---|---|
-| Onde ficam os apps | Dentro do painel (`app/`) | Na raiz do projeto, cada um com seu repo |
-| Papel do lliure | O sistema inteiro | A casca: layout, menu, login |
+| Where apps live | Inside the panel (`app/`) | At the project root, each with its own repo |
+| Role of lliure | The whole system | The shell: layout, menu, login |
 | Namespace | `LliurePanel\` | `Lliure\` |
 | Layout | AdminLTE 3 / Bootstrap 4 | AdminLTE 4 / Bootstrap 5 |
-| Pacote | `lliure/lliure` | `vinteenove/lliure-panel` |
+| Package | `lliure/lliure` | `vinteenove/lliure-panel` |
 
-## Estrutura de um projeto
+## Project layout
 
 ```
-projeto/
-├── composer.json      ← requer vinteenove/lliure-panel e junta os apps (merge-plugin)
-├── etc/database.php   ← credenciais (fora do git)
-├── vendor/vinteenove/lliure-panel/   ← este pacote, instalado pelo composer
-├── cache/twig/        ← cache do Twig (apagar a cada deploy)
-├── cifras/            ← um app, com repositório próprio
-└── site/              ← outro app
+project/
+├── composer.json      ← requires vinteenove/lliure-panel and merges the apps (merge-plugin)
+├── etc/database.php   ← credentials (outside git)
+├── vendor/vinteenove/lliure-panel/   ← this package, installed by composer
+├── cache/twig/        ← Twig cache (clear it on every deploy)
+├── cifras/            ← an app, with its own repository
+└── site/              ← another app
 ```
 
-O lliure-panel entra pelo composer, como qualquer pacote. O repositório é
-privado, então o projeto declara o VCS:
-
-```json
-"repositories": [
-  { "type": "vcs", "url": "git@github.com:vinteenove/lliure-panel.git", "no-api": true }
-],
-"require": {
-  "vinteenove/lliure-panel": "^2.0@alpha"
-}
-```
-
-O `no-api` faz o composer clonar por SSH. Sem ele, ele tenta o zip pela API
-do GitHub, que responde 404 para repositório privado sem token. O `@alpha` é
-necessário enquanto não houver `v2.0.0` e o projeto usar
+`@alpha` is needed until `v2.0.0` exists, for projects with
 `minimum-stability: stable`.
 
-Os apps não são pacotes publicados: cada um é um checkout na raiz, e o
-`wikimedia/composer-merge-plugin` junta o `composer.json` deles no do projeto
-(`"merge-plugin": {"include": ["cifras/composer.json"]}`).
+Apps are not published packages: each one is a checkout at the root, and
+`wikimedia/composer-merge-plugin` merges their `composer.json` into the
+project's (`"merge-plugin": {"include": ["cifras/composer.json"]}`).
 
-Até a `v2.0.0-alpha.5`, o lliure-panel era um clone em `lliure/` na raiz do
-projeto, carregado por um autoload escrito à mão. Essas tags não instalam pelo
-composer: elas exigem o AdminLTE como pacote, e ele não é `stable`. Use a
-`v2.0.0-alpha.6` ou mais nova.
+Up to `v2.0.0-alpha.5`, lliure-panel was a clone in `lliure/` at the project
+root, loaded by a hand-written autoloader. Those tags do not install through
+composer: they require AdminLTE as a package, and it is not `stable`. Use
+`v2.0.0-alpha.6` or later.
 
-## Criar um app
+## Building an app
 
-O gabarito é o [pipeline](https://github.com/vinteenove/pipeline), o
-primeiro app desta geração em produção. O segundo, o
-[Fiscon](https://github.com/vinteenove/Fiscon), seguiu a mesma forma.
+The reference is the [pipeline](https://github.com/vinteenove/pipeline), the
+first app of this generation in production. The second one, Fiscon, followed
+the same shape.
 
-### Pastas
+### Folders
 
 ```
 cifras/
-├── composer.json    ← só o autoload do app (nada de require do lliure-panel)
+├── composer.json    ← just the app's autoload (no require of lliure-panel)
 ├── src/             ← AppServiceProvider, Controllers, Models
-├── views/           ← templates Twig, acessados como @cifras/...
-├── migrations/      ← 001_xxx.sql, 002_xxx.sql... idempotentes
+├── views/           ← Twig templates, used as @cifras/...
+├── migrations/      ← 001_xxx.sql, 002_xxx.sql... idempotent
 └── assets/          ← logo, favicon
 ```
 
@@ -112,13 +100,14 @@ cifras/
 }
 ```
 
-As dependências comuns (lliure-core, router, twig, dibi) já vêm do
-lliure-panel. O app só declara o que ele usa e o projeto ainda não tem.
+The common dependencies (lliure-core, router, twig, dibi) already come with
+lliure-panel. An app only declares what it uses that the project does not
+already have.
 
-### O provider
+### The provider
 
-O app implementa as duas interfaces. A de rotas é opcional no modo sozinho,
-mas o modo embarcado só conhece o app por ela:
+An app implements both interfaces. The routes one is optional in standalone
+mode, but embedded mode only knows the app through it:
 
 ```php
 use Lliure\Bootstrap;
@@ -132,7 +121,7 @@ final class AppServiceProvider implements ServiceProviderInterface, RoutesProvid
 {
     public static function boot(Bootstrap $bootstrap): void
     {
-        // views em @cifras/...
+        // views as @cifras/...
         $bootstrap->registerApp('cifras', dirname(__DIR__));
     }
 
@@ -143,28 +132,28 @@ final class AppServiceProvider implements ServiceProviderInterface, RoutesProvid
             url:   '/cifras',
             icon:  'fas fa-music',
             order: 10,
-            // opcional: esconde o item de quem não pode acessar
+            // optional: hides the item from who cannot access it
             visible: fn(): bool => true,
         ));
-        // Vários itens sob um título: $menu->addGroup('Título', [$item, ...], 'fas fa-x', 0)
+        // Several items under one heading: $menu->addGroup('Heading', [$item, ...], 'fas fa-x', 0)
     }
 
     public static function routes(Router $router): void
     {
-        $router->get('/',          [Controllers\Cifras::class, 'index']);
-        $router->post('/cifras',   [Controllers\Cifras::class, 'criar']);
+        $router->get('/',            [Controllers\Cifras::class, 'index']);
+        $router->post('/cifras',     [Controllers\Cifras::class, 'criar']);
         $router->get('/cifras/{id}', [Controllers\Cifras::class, 'ver']);
     }
 }
 ```
 
-As rotas usam o `\Router\Router` (pacote `lliure/router`). O controller
-recebe `(ServerRequestInterface $request, array $vars)` e devolve uma string
-(HTML) ou uma `ResponseInterface`.
+Routes use `\Router\Router` (package `lliure/router`). A controller receives
+`(ServerRequestInterface $request, array $vars)` and returns a string (HTML)
+or a `ResponseInterface`.
 
 ### Views
 
-Toda tela estende o layout do painel, e o resto é bloco:
+Every screen extends the panel layout; the rest is blocks:
 
 ```twig
 {% extends "layout.twig" %}
@@ -176,103 +165,108 @@ Toda tela estende o layout do painel, e o resto é bloco:
 {% endblock %}
 ```
 
-| Bloco | Para que serve |
+| Block | What it is for |
 |---|---|
-| `content` | o corpo da tela |
-| `content_header` | o título acima do corpo |
-| `title` | o `<title>` da aba |
-| `styles` | CSS próprio da tela, dentro do `<head>` |
-| `navbar_left`, `navbar_right` | itens extras na barra do topo |
-| `body_class` | classes do `<body>` (tela cheia, sem menu...) |
-| `sidebar`, `footer`, `user_panel` | trocar ou esconder essas partes; `{% block footer %}{% endblock %}` tira o rodapé |
+| `content` | the body of the screen |
+| `content_header` | the heading above the body |
+| `title` | the tab's `<title>` |
+| `styles` | the screen's own CSS, inside `<head>` |
+| `navbar_left`, `navbar_right` | extra items in the top bar |
+| `body_class` | `<body>` classes (full screen, no menu...) |
+| `sidebar`, `footer`, `user_panel` | replace or hide those parts; `{% block footer %}{% endblock %}` removes the footer |
 
-Para renderizar: `Bootstrap::getInstance()->getTwig()->render('@cifras/index.twig', $dados)`.
+To render: `Bootstrap::getInstance()->getTwig()->render('@cifras/index.twig', $data)`.
 
-### Banco
+### Database
 
-- **Cada linha pertence a uma instância** (coluna `instance`), e toda
-  consulta filtra por ela. Peça a instância a um lugar só no app (no pipeline,
-  `Pipeline\Instancia::atual()`), nunca a uma constante espalhada. O nome é
-  `instance`, não `account`: o núcleo do Vimu chamou de `account` até
-  nov/2026 e a troca custou três releases.
-- **Migração separada do deploy.** O usuário da aplicação não roda DDL. A
-  migração roda antes de publicar, e o código precisa funcionar com ela já
-  aplicada e também sem ela (coluna nova sempre opcional na primeira versão).
-- **`SET NAMES utf8mb4` no `boot()`**, se as tabelas forem utf8mb4. A conexão
-  que o Vimu abre é utf8, e emoji vira `?`.
+- **Every row belongs to an instance** (column `instance`), and every query
+  filters by it. Ask one place in the app for the instance (in the pipeline,
+  `Pipeline\Instancia::atual()`), never a constant spread around. Call it
+  `instance`, not `account`: Vimu's core called it `account` until Nov 2026,
+  and renaming it took three releases.
+- **Migrations are separate from deploys.** The application user does not
+  run DDL. The migration runs before publishing, and the code has to work
+  both with it applied and without it (a new column is always optional in
+  its first version).
+- **`SET NAMES utf8mb4` in `boot()`** if the tables are utf8mb4. The
+  connection Vimu opens is utf8, and emoji turn into `?`.
 
-### No Vimu
+### In Vimu
 
-Além do repositório do app, entram no repositório `vinteenove/vimu`:
+Besides the app's repository, these go into `vinteenove/vimu`:
 
-1. `src/Hosts/Cifras.php`, com o `AppConfig` (`provider`, `serviceId`, marca,
-   login). É ele que faz o login, a escolha de instância e o SSO serem os mesmos
-   dos outros apps.
-2. `cifras/composer.json` no `merge-plugin` da raiz, e `/cifras` no
+1. `src/Hosts/Cifras.php`, with the `AppConfig` (`provider`, `serviceId`,
+   branding, login). It makes login, instance choice and SSO the same as in
+   the other apps.
+2. `cifras/composer.json` in the root `merge-plugin`, and `/cifras` in
    `.gitignore`.
-3. Um `case` no `deploy/deploy-app` e o workflow de release no repositório do
-   app.
+3. A `case` in `deploy/deploy-app` and the release workflow in the app's
+   repository.
 
-O passo a passo, com as armadilhas que já custaram tempo, está em
-`docs/deploy-dos-apps-v2.md` no repositório do Vimu.
+The step by step, with the traps that already cost time, is in
+`docs/deploy-dos-apps-v2.md` in the Vimu repository.
 
-## Dois modos de uso
+## Two ways to run it
 
-**Sozinho.** O lliure-panel conecta o banco com `config/database.php` (que
-lê `etc/database.php` na raiz do projeto), cuida da sessão (30 dias) e faz o
-login com a tabela `lliure_users` (`migrations/001_users.sql`). É o caso do
-espalu e do musicasdeigreja.
+**Standalone.** lliure-panel connects to the database with
+`config/database.php` (which reads `etc/database.php` at the project root),
+handles the session (30 days) and logs in against the `lliure_users` table
+(`migrations/001_users.sql`).
 
-A migração não cria nenhum usuário. O primeiro vai ser criado por uma tela de
-boas-vindas (welcome), com a senha escolhida por quem instala. A tela ainda
-não existe; até lá, o primeiro usuário entra direto no banco. Até a
-`v2.0.0-alpha.1`, a
-migração criava um `admin` com senha fixa. Em instalações dessa época, confira
-se esse usuário existe e troque a senha dele.
+The migration creates no user. The first one will be created by a welcome
+screen, with a password chosen by whoever installs it. That screen does not
+exist yet; until then, the first user goes straight into the database. Up to
+`v2.0.0-alpha.1` the migration created an `admin` user with a fixed password.
+On installations from that time, check whether that user exists and change
+its password.
 
-**Embarcado.** O lliure-panel sobe dentro de outro sistema que já tem
-usuário, banco e sessão. É o caso do Vimu, onde login, instância e
-permissões continuam sendo do Vimu. Nesse modo:
+**Embedded.** lliure-panel runs inside another system that already has users,
+a database and a session. That is the case of Vimu, where login, instance and
+permissions stay with Vimu. In this mode:
 
-- se o autoloader do Composer já foi carregado, o Bootstrap não procura um
-  `vendor/` próprio;
-- se já existe uma conexão `dibi` aberta, ela é reaproveitada. Conectar de
-  novo trocaria o banco por baixo de quem conectou antes;
-- quem hospeda informa o usuário logado com
-  `Lliure\Auth\Auth::setIdentityResolver(fn() => ...)`, sem segundo login e
-  sem precisar de linha em `lliure_users`;
-- quem hospeda chama `Bootstrap::setProjectRoot($raiz)` **antes** do primeiro
-  `getInstance()`. É de lá que saem o `cache/twig` e o `vendor/autoload.php`.
-  Sem a chamada, vale a pasta acima do pacote, que dentro do `vendor/` é
-  `vendor/vinteenove`. O cache ficaria fora do lugar que o deploy limpa, e o
-  layout novo não apareceria.
+- if the Composer autoloader is already loaded, Bootstrap does not look for a
+  `vendor/` of its own;
+- if a `dibi` connection is already open, it is reused. Connecting again
+  would swap the database under whoever connected first;
+- the host tells who is logged in with
+  `Lliure\Auth\Auth::setIdentityResolver(fn() => ...)`, with no second login
+  and no row in `lliure_users`;
+- the host calls `Bootstrap::setProjectRoot($root)` **before** the first
+  `getInstance()`. `cache/twig` and `vendor/autoload.php` are found from
+  there. Without the call, the folder above the package is used, which inside
+  `vendor/` is `vendor/vinteenove`: the cache would sit outside the folder the
+  deploy clears, and a new layout would not show up.
 
-Nos dois modos, uma falha de conexão com o banco estoura na hora, em vez de
-seguir em silêncio até a primeira consulta.
+In both modes, a database connection failure fails right away instead of
+staying silent until the first query.
 
-## Versões
+## Versions
 
-- `v2.0.0-alpha.N` enquanto a forma de integrar os apps ainda estiver
-  mudando. Cada alpha pode quebrar compatibilidade com a anterior.
-- `v2.0.0` quando o primeiro app construído inteiramente sobre esta geração
-  (o pipeline do Vimu) estiver em produção.
+- `v2.0.0-alpha.N` while the way apps integrate is still changing. Each alpha
+  may break compatibility with the previous one.
+- `v2.0.0` once the first app built entirely on this generation (Vimu's
+  pipeline) is in production.
 
-Cada projeto escolhe a versão pelo composer, e atualizar vira uma decisão de
-cada projeto:
+Each project picks its version through composer, and updating is each
+project's decision:
 
 ```
 composer update vinteenove/lliure-panel
-composer update vinteenove/lliure-panel --with vinteenove/lliure-panel:2.0.0-alpha.6   # uma tag exata
+composer update vinteenove/lliure-panel --with vinteenove/lliure-panel:2.0.0-alpha.6   # an exact tag
 ```
 
-Depois de atualizar, apague o `cache/twig`: em produção o Twig não relê
-template alterado.
+After updating, clear `cache/twig`: in production Twig does not re-read a
+changed template.
 
-No Vimu, publicar uma release deste repositório já sobe a versão. O workflow
-roda `deploy-app lliure-panel <tag>` no servidor, que faz o `composer update
---with` daquela tag e limpa o cache. Para voltar uma versão, use o Run
-workflow com a tag antiga, a partir da `v2.0.0-alpha.6`.
+In Vimu, publishing a release of this repository ships it. The workflow runs
+`deploy-app lliure-panel <tag>` on the server, which does the
+`composer update --with` for that tag and clears the cache. To roll back, use
+"Run workflow" with the older tag (from `v2.0.0-alpha.6` on).
 
-Uma tag nova deste pacote precisa funcionar com os apps que já estão em
-produção: eles sobem em dias diferentes. Para mudar um nome, mantenha o antigo
-como apelido `@deprecated` por uma release.
+A new tag of this package has to work with the apps already in production:
+they ship on different days. To rename something, keep the old name as a
+`@deprecated` alias for one release.
+
+## License
+
+MIT.
